@@ -55,10 +55,10 @@ const RenderComponent = ({ slug }) => {
     return <AdvanceBooking />;
   } else if (slug === "rentPayment") {
     return <RentPaymentComponent />;
-  }else if (slug==='complains'){
-    return <ComplainListAdmin/>
-  }else if(slug==='teamMember'){
-     return <TeamMember/>
+  } else if (slug === "complains") {
+    return <ComplainListAdmin />;
+  } else if (slug === "teamMember") {
+    return <TeamMember />;
   }
 };
 function Dynamic() {

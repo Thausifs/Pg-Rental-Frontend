@@ -43,11 +43,16 @@ const addNewListing = async (body, token) => {
   });
   return response.data;
 };
+const getAnalitic = async () => {
+  const response = await axios.get(`${config.url}/api/listing/analitic`);
+  return response.data;
+};
 
 const listingApi = {
   getAllListing,
   addNewListing,
   getListingById,
   getAllListingForAdmin,
+  getAnalitic,
 };
 export default listingApi;

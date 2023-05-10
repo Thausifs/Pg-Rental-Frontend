@@ -24,9 +24,10 @@ import { useAuthToken } from "../../contexts/authContext";
 import toast from "react-hot-toast";
 import { useQueryClient } from "react-query";
 import useComplains from "../../utils/Hooks/useComplain";
+import { Select } from "@mui/material";
 
 const ComplainList = () => {
-  const { complains, isLoading } = useComplains()
+  const { complains, isLoading } = useComplains();
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const queryClient = useQueryClient();
   const [validationErrors, setValidationErrors] = useState({});
@@ -34,7 +35,7 @@ const ComplainList = () => {
   const { mutate: editComment, isLoading: isLoading2 } = useMutation({
     mutationKey: ["user_edit"],
     mutationFn: ({ id, data }) => {
-      return complainApi.editComplainbyId(id,data,token)
+      return complainApi.editComplainbyId(id, data, token);
     },
     onSuccess: (data) => {
       toast.success(`Complain edited Successfully`);
@@ -43,13 +44,12 @@ const ComplainList = () => {
   });
   const { mutate: addNewComplain, isLoading: isLoading4 } = useMutation({
     mutationKey: ["addNewComplain"],
-    mutationFn: (data) => complainApi.addNewComplain(data,token) ,
+    mutationFn: (data) => complainApi.addNewComplain(data, token),
     onSuccess: (data) => {
       toast.success(`Complain added Successfully`);
       queryClient.invalidateQueries(["getAllComplain"]);
     },
   });
-
 
   const handleCreateNewRow = (values) => {
     tableData.push(values);
@@ -58,9 +58,12 @@ const ComplainList = () => {
 
   const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
     if (!Object.keys(validationErrors).length) {
-      editComment({ id: values.id, data: {
-         message:values.message
-      } });
+      editComment({
+        id: values.id,
+        data: {
+          message: values.message,
+        },
+      });
       //send/receive api updates here, then refetch or update local table data for re-render
       exitEditingMode(); //required to exit editing mode and close modal
     }
@@ -70,9 +73,6 @@ const ComplainList = () => {
     setValidationErrors({});
   };
 
-
-
-
   const columns = useMemo(
     () => [
       {
@@ -80,7 +80,7 @@ const ComplainList = () => {
         header: "ID",
         enableColumnOrdering: false,
         enableSorting: false,
-        enableEditing:false,
+        enableEditing: false,
         size: 80,
       },
       {
@@ -96,14 +96,21 @@ const ComplainList = () => {
         enableEditing: false,
       },
       {
+        accessorKey: "ComplainCatagory",
+        header: "Complain Catagory",
+        size: 140,
+        enableEditing: false,
+      },
+
+      {
         accessorKey: "message",
         header: "Message",
-        enableEditing: true, //disable editing on this column 
+        enableEditing: true, //disable editing on this column
       },
       {
         accessorKey: "createdAt",
         header: "Created At",
-        enableEditing: false, 
+        enableEditing: false,
       },
     ],
     []
@@ -137,7 +144,7 @@ const ComplainList = () => {
                 <IconButton onClick={() => table.setEditingRow(row)}>
                   <Edit />
                 </IconButton>
-              </Tooltip> 
+              </Tooltip>
             </Box>
           )}
           renderTopToolbarCustomActions={() => (
@@ -162,7 +169,7 @@ const ComplainList = () => {
   );
 };
 const newUserDataValidation = yup.object().shape({
-  message:yup.string().min(10)
+  message: yup.string().min(10),
 });
 
 //example of creating a mui dialog modal for creating new rows
@@ -178,12 +185,13 @@ export const CreateNewAccountModal = ({ open, onClose, addNewUser }) => {
 
   return (
     <Dialog open={open}>
-      <DialogTitle textAlign="center">Create New Account</DialogTitle>
+      <DialogTitle textAlign="center">Create New Complain</DialogTitle>
       <DialogContent>
         <Formik
           onSubmit={handleSubmit}
           initialValues={{
-           message:""
+            message: "",
+            ComplainCatagory: "ELECTRICAL",
           }}
           validationSchema={newUserDataValidation}
         >
@@ -197,9 +205,7 @@ export const CreateNewAccountModal = ({ open, onClose, addNewUser }) => {
                   gap: "1.5rem",
                 }}
               >
-                {[
-                  { id: "message", title: "Message" },
-                ].map(({ id, title }) => (
+                {[{ id: "message", title: "Message" }].map(({ id, title }) => (
                   <TextField
                     key={id}
                     error={errors[id]}
@@ -209,6 +215,16 @@ export const CreateNewAccountModal = ({ open, onClose, addNewUser }) => {
                     value={values[id]}
                   />
                 ))}
+                <Select
+                  label="ComplainCatagory"
+                  name="ComplainCatagory"
+                  value={values.ComplainCatagory}
+                  onChange={handleChange}
+                >
+                  <MenuItem value="ELECTRICAL">ELECTRICAL</MenuItem>
+                  <MenuItem value="PLUMBING">PLUMBING</MenuItem>
+                  <MenuItem value="SNITARY">SNITARY</MenuItem>
+                </Select>
               </Stack>
             </form>
           )}
@@ -222,13 +238,11 @@ export const CreateNewAccountModal = ({ open, onClose, addNewUser }) => {
           form="myform"
           variant="contained"
         >
-          Create New Account
+          Create New Complain
         </Button>
       </DialogActions>
     </Dialog>
   );
 };
-
-
 
 export default ComplainList;
